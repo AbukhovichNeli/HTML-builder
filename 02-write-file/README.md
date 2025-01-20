@@ -60,7 +60,7 @@ _Please note, if you are seeking information in Russian, be aware that translati
   - [Events in Node.js](https://medium.com/@diego.coder/events-in-node-js-76fbe1b6cdad)
 - Streams:
   - [Stream](https://nodejs.org/api/stream.html)
-  - [fs.createReadStream](https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options)
+  - [fs.createReadStream](https://nodejs.org/api/stream.html)
   - [Understanding Streams in Node.js](https://nodesource.com/blog/understanding-streams-in-nodejs/)
   - [Node.js Streams: Everything you need to know](https://www.freecodecamp.org/news/node-js-streams-everything-you-need-to-know-c9141306be93/)
 - Path Module:
