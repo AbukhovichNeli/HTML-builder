@@ -3,36 +3,31 @@ const path = require('path');
 const { readdir } = require('fs/promises');
 
 const styleDirPath = path.join(__dirname, 'styles');
-const bundleStylePath = path.join(__dirname, 'project-dist', 'bundle.css'); 
-const pathProject = path.join(__dirname, 'project-dist');
-
-
-(async () => {
-  try {
-    await fs.promises.mkdir(pathProject, { recursive: true });
-  } catch (err) {
-    console.error(err);
-  }
-})();
-
-const steamCss = fs.createWriteStream(bundleStylePath, { flags: 'w' });
+let stylesArr = [];
+let fullCss = '';
+const projectPath = path.join(__dirname, '/project-dist');
 
 (async () => {
-  try {
-    const styleDir = await readdir(styleDirPath);
-    for (const styleFile of styleDir) {
-      const styleFilePath = path.join(styleDirPath, styleFile);
-
-      if (path.extname(styleFile).toLowerCase() === '.css') {
-        const fileContent = await fs.promises.readFile(styleFilePath, 'utf8');
-
-        steamCss.write(fileContent + '\n');
+  const stylesDir = await readdir(styleDirPath);
+  for (const styleFile of stylesDir) {
+    const pathCSS = path.join(styleDirPath, styleFile);
+    fs.stat(pathCSS, (err, stats) => {
+      if (err) {
+        console.error(err);
+        return;
       }
-    }
-
-    steamCss.end();
-
-  } catch (err) {
-    console.error(err);
+      if (path.extname(styleFile).toString() === '.css' && stats.isFile()) {
+        const steamRead = fs.createReadStream(pathCSS);
+        const steamStyles = fs.createWriteStream('/Users/nelli/HTML-builder/05-merge-styles/project-dist/bundle.css',  { encoding: "utf-8", flags: "a" });
+        steamRead.on('data', function (chunk) {
+          stylesArr.push(chunk.toString());
+        });
+        steamRead.on('end', () => {
+          fullCss = stylesArr.join('');
+          steamStyles.write(fullCss)
+        });
+      }
+    });
   }
 })();
+
