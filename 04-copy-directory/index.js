@@ -1,48 +1,36 @@
 const fs = require('fs');
 const path = require('path');
-const { readdir } = require('fs/promises');
+const { readdir, stat } = require('fs/promises');
+const { error } = require('console');
 
 const filesPath = path.join(__dirname, '/files');
-const copyPath = path.join(__dirname, '/files-copy');
-
-fs.stat('/Users/nelli/HTML-builder/04-copy-directory/files-copy', function (err) {
-    if (!err) {
-    } else if (err.code === 'ENOENT') {
-        fs.mkdir('files-copy', (err) => {
-            if (err) throw err;
-        });
-    }
-});
+const copyPath = path.join(filesPath, '/files-copy');
 
 (async () => {
     try {
-        const files = await readdir(filesPath);
-        for (const file of files) {
-            const filePath = path.join(filesPath, file);
-            const fileCopyPath = path.join(copyPath, file);
-            fs.copyFile(filePath, fileCopyPath, (err) => {
-                if (err) {
-                    console.log("Error Found:", err);
-                }
-            })
-        }
-        await checkFilesInside();
-    } catch (err) {
-        console.error(err);
+        fs.mkdir(copyPath, { recursive: true }, (err) => {
+            if (err) {
+                return console.error(err);
+            }
+        });
+    } catch (error) {
+        console.error(error);
     }
 })();
 
-async function checkFilesInside() {
-    try {
-        const files = await readdir(copyPath);
-        const originalFiles = await readdir(filesPath);
-        for (const file of files) {
-            if (!originalFiles.includes(file)) {
-                const filePathInDest = path.join(copyPath, file);
-                await fs.promises.rm(filePathInDest);
-            }
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
+(async () => {
+  const files = await readdir(filesPath);
+  for (const file of files) {
+    const pathToFile = path.join(filesPath, file);
+    const fileCopyPath = path.join(copyPath, file);
+    fs.stat(pathToFile, (error, stats) => {
+      if (stats.isFile()) {
+        fs.copyFile(pathToFile, fileCopyPath, (err) => {
+          if (err) {
+            console.log("Error Found:", err);
+          }
+        });
+      }
+    });
+  }
+})();
