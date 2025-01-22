@@ -7,10 +7,10 @@ let stylesArr = [];
 let fullCss = '';
 const projectPath = path.join(__dirname, '/project-dist');
 
-(async () => {
+async function updateBundle() {
+  stylesArr = [];
   const stylesDir = await readdir(styleDirPath);
   for (const styleFile of stylesDir) {
-    stylesArr = [];
     const pathCSS = path.join(styleDirPath, styleFile);
     fs.stat(pathCSS, (err, stats) => {
       if (err) {
@@ -27,7 +27,12 @@ const projectPath = path.join(__dirname, '/project-dist');
           fullCss = stylesArr.join('');
           steamStyles.write(fullCss);
         });
+        steamRead.on('error', (err) => {
+          console.error('Ошибка в потоке чтения:', err);
+        });
       }
     });
   }
-})();
+}
+
+updateBundle();
