@@ -10,7 +10,7 @@ const FilePath = path.join(__dirname, '/secret-folder');
     for (const file of files) {
       const fullPath = path.join(FilePath, file);
       const fileStat = await stat(fullPath);
-      if (fileStat.isFile) {
+      if (file !== '.DS_Store' && fileStat.isFile()) {
         const ext = path.extname(file);
         console.log(` ${path.basename(file, ext)} - ${ext.slice(1)} - ${(fileStat.size / 1024).toFixed(2)}kb `); 
       }
